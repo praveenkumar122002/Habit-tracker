@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+
+    <!-- Inline CSS for styling -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0e5157;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 900px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .badge-primary {
+            background-color: #007bff; /* Ongoing */
+        }
+
+        .badge-warning {
+            background-color: #ffc107; /* Not Completed */
+        }
+
+        .badge-success {
+            background-color: #28a745; /* Finished */
+        }
+
+        .btn {
+            padding: 8px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn + .btn {
+            margin-left: 10px; /* Adds space between buttons */
+        }
+
+        .btn-ongoing {
+            background-color: #3498db; /* Blue for Mark as Ongoing */
+        }
+
+        .btn-ongoing:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-completed {
+            background-color: #2ecc71; /* Green for Mark as Completed */
+        }
+
+        .btn-completed:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-not-completed {
+            background-color: #e67e22; /* Orange for Mark as Not Completed */
+        }
+
+        .btn-not-completed:hover {
+            background-color: #d35400;
+        }
+
+        .btn-edit {
+            background-color: #f1c40f; /* Yellow for Edit */
+            color: black;
+        }
+
+        .btn-edit:hover {
+            background-color: #d4ac0d;
+        }
+
+        .btn-delete {
+            background-color: #e74c3c; /* Red for Delete */
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+
+        .actions-container {
+            margin-top: 20px; /* Adds space above buttons */
+            display: flex;
+            gap: 10px; /* Space between buttons */
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h2>Welcome, {{ user.username }}!</h2>
+        <h3>Your Habits</h3>
+
+        <!-- Table to display habits -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for habit in habits %}
+                    <tr>
+                        <td>{{ habit.description }}</td>
+                        <td class="status">
+                            {% if habit.status == 'ongoing' %}
+                                <span class="badge badge-primary">Ongoing</span>
+                            {% elif habit.status == 'not-completed' %}
+                                <span class="badge badge-warning">Not Completed</span>
+                            {% else %}
+                                <span class="badge badge-success">Finished</span>
+                            {% endif %}
+                        </td>
+                        <td class="actions">
+                            <!-- Handle default or missing status -->
+                            {% if habit.status == 'finished' %}
+                                <a href="{% url 'update_status' habit.id 'not-completed' %}" class="btn btn-not-completed">Mark as Not Completed</a>
+                            {% else %}
+                                <!-- Default to showing Mark as Completed for new or not-completed habits -->
+                                <a href="{% url 'update_status' habit.id 'finished' %}" class="btn btn-completed">Mark as Completed</a>
+                            {% endif %}
+                            <!-- Keep Edit and Delete buttons unchanged -->
+                            <a href="{% url 'edit_habit' habit.id %}" class="btn btn-edit">Edit</a>
+                            <a href="{% url 'delete_habit' habit.id %}" class="btn btn-delete">Delete</a>
+                        </td>
+                        
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3">You don't have any habits yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Action Buttons -->
+        <div class="actions-container">
+            <a href="{% url 'add_habit' %}" class="btn btn-completed">Add a New Habit</a>
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-delete">Logout</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html> 
+
+
+
+
+
+
+
+
+
+
